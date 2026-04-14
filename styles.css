@@ -162,18 +162,48 @@ body.header-contrast .brand {
 }
 
 .hero-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.01em;
+  line-height: 1;
+}
+
+.hero-wordmark-char {
   display: inline-block;
   background: linear-gradient(
-    90deg,
+    105deg,
     rgb(240, 248, 252) 0%,
-    rgb(97, 247, 245) 52%,
+    rgb(97, 247, 245) 48%,
     rgb(127, 66, 216) 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-stroke: 1px rgba(232, 238, 239, 0.16);
-  text-shadow: 0 8px 24px rgba(127, 66, 216, 0.24);
+  text-shadow: 0 8px 22px rgba(127, 66, 216, 0.26);
+  background-size: 200% 200%;
+  transform-origin: 50% 70%;
+  --amp: var(--bubble-amplitude, 1);
+  animation: bubble-letter-gradient 6.1s ease-in-out infinite;
+  animation-delay: calc(var(--bubble-delay, 0ms) + var(--bubble-drift, 18ms));
+  will-change: transform, filter, background-position;
+}
+
+.hero-wordmark-char.is-bubble {
+  animation:
+    bubble-letter 3.1s cubic-bezier(0.34, 0.01, 0.18, 1) infinite,
+    bubble-letter-gradient 6.1s ease-in-out infinite;
+  animation-delay: var(--bubble-delay, 0ms),
+    calc(var(--bubble-delay, 0ms) + var(--bubble-drift, 18ms));
+}
+
+.hero-wordmark-char.is-space {
+  width: 0.34em;
+  background: none;
+  color: transparent;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  animation: none;
 }
 
 .hero-subtitle {
@@ -632,6 +662,43 @@ section[id] {
   }
 }
 
+@keyframes bubble-letter {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: saturate(1) brightness(1);
+  }
+
+  22% {
+    transform: translateY(calc(-0.04em * var(--amp)))
+      scale(calc(1 + 0.14 * var(--amp)), calc(1 + 0.2 * var(--amp)));
+    filter: saturate(1.2) brightness(1.06);
+  }
+
+  48% {
+    transform: translateY(calc(0.03em * var(--amp)))
+      scale(calc(1 - 0.12 * var(--amp)), calc(1 - 0.16 * var(--amp)));
+    filter: saturate(0.92) brightness(0.96);
+  }
+
+  72% {
+    transform: translateY(calc(-0.02em * var(--amp)))
+      scale(calc(1 + 0.07 * var(--amp)), calc(1 + 0.05 * var(--amp)));
+    filter: saturate(1.08) brightness(1.03);
+  }
+}
+
+@keyframes bubble-letter-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
 @media (max-width: 1024px) {
   .two-column,
   .showcase-grid,
@@ -694,5 +761,11 @@ section[id] {
 
   .section {
     padding-inline: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-wordmark-char {
+    animation: none;
   }
 }

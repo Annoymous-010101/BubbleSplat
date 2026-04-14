@@ -27,6 +27,52 @@ const revealInViewport = () => {
   });
 };
 
+const tokenizeWordmark = () => {
+  const wordmark = document.querySelector(".hero-wordmark");
+
+  if (!wordmark || wordmark.dataset.tokenized === "true") {
+    return;
+  }
+
+  const text = wordmark.textContent.trim();
+
+  if (!text) {
+    return;
+  }
+
+  wordmark.dataset.tokenized = "true";
+  wordmark.classList.add("is-tokenized");
+  wordmark.setAttribute("aria-label", text);
+  wordmark.textContent = "";
+
+  const fragment = document.createDocumentFragment();
+  const bubbleLength = text.toLowerCase().startsWith("bubble") ? 6 : text.length;
+
+  [...text].forEach((char, index) => {
+    const span = document.createElement("span");
+    span.className = "hero-wordmark-char";
+    span.classList.add(index < bubbleLength ? "is-bubble" : "is-splat");
+    span.setAttribute("aria-hidden", "true");
+    span.style.setProperty("--bubble-delay", `${index * 120}ms`);
+    span.style.setProperty("--bubble-drift", `${(index % 4) * 20 + 6}ms`);
+    span.style.setProperty(
+      "--bubble-amplitude",
+      `${0.72 + ((index * 37) % 41) / 100}`
+    );
+
+    if (char === " ") {
+      span.classList.add("is-space");
+      span.textContent = "\u00A0";
+    } else {
+      span.textContent = char;
+    }
+
+    fragment.appendChild(span);
+  });
+
+  wordmark.appendChild(fragment);
+};
+
 const tokenizeClaim = () => {
   const claim = document.querySelector(".hero-claim");
 
@@ -95,6 +141,7 @@ const syncHeader = () => {
 };
 
 syncHeader();
+tokenizeWordmark();
 tokenizeClaim();
 settleReveal();
 window.addEventListener("DOMContentLoaded", settleReveal);
