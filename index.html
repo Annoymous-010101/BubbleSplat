@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BubbleSplat</title>
+    <meta
+      name="description"
+      content="BubbleSplat: Forget Swollen LODs with Low-Redundancy, Inflation-Driven 3D Gaussian Streaming."
+    />
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="apple-touch-icon" href="assets/icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top">
+        <img class="brand-icon" src="assets/icon.png" alt="" width="32" height="32" />
+        <span>BubbleSplat</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#summary">Summary</a>
+        <a href="#method">Method</a>
+        <a href="#results">Results</a>
+        <a href="#demo">Demo</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <h1 class="hero-wordmark">BubbleSplat</h1>
+          <p class="hero-subtitle">
+            Forget Swollen LODs with Low-Redundancy, Inflation-Driven 3D Gaussian
+            Streaming
+          </p>
+        </div>
+
+        <div class="hero-foot">
+          <div class="hero-description">
+            <p class="hero-claim">
+              The next-generation streaming system for massive 3D Gaussian scenes.
+            </p>
+
+            <div class="section-shell-wide">
+          <div class="teaser-layout">
+            <!-- <div class="teaser-copy reveal">
+              <h2>Coherent large-scene streaming without swollen replacement LODs.</h2>
+              <p>
+                The teaser condenses the central promise into one frame: BubbleSplat
+                keeps progressive delivery append-only, preserves useful structure in
+                early prefixes, and avoids the retransmission tax of replacement-style
+                LOD streaming.
+              </p>
+            </div> -->
+
+            <figure class="full-figure media-surface reveal">
+              <div class="media-frame media-frame-transparent">
+                <img
+                  src="assets/teaser.png"
+                  alt="BubbleSplat teaser figure from the LaTeX source"
+                  width="3112"
+                  height="1145"
+                />
+              </div>
+            </figure>
+          </div>
+        </div>
+
+            <p class="hero-summary">
+              BubbleSplat streams large scenes as transmit-once, coarse-to-fine splat
+              tiles, inflates sparse early prefixes into coherent proxies, and keeps
+              coarse levels resident as a bounded-memory cache once refinement moves on.
+            </p>
+          </div>
+
+          <ul class="hero-metrics" aria-label="Key metrics">
+            <li>
+              <strong>80% lower</strong>
+              <span>bandwidth redundancy than the state of the practice</span>
+            </li>
+            <li>
+              <strong>3.2× fewer bytes</strong>
+              <span>to reach 27 dB than the state of the practice</span>
+            </li>
+            <li>
+              <strong>60 FPS</strong>
+              <span>on phones, with 22 FPS at a 128 MB VRAM budget</span>
+            </li>
+            <li>
+              <strong>810M</strong>
+              <span>splat stress test rendered in real time</span>
+            </li>
+          </ul>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="assets/paper.pdf" target="_blank" rel="noreferrer">
+              Paper
+            </a>
+            <a class="button" href="assets/supplementary.pdf" target="_blank" rel="noreferrer">
+              Supplementary
+            </a>
+            <a class="button" href="#demo">
+              Watch Demo
+            </a>
+          </div>
+        </div>
+        
+      </section>
+
+      <!-- <section class="section section-ink">
+        <div class="section-shell-wide">
+          <div class="teaser-layout">
+            <div class="teaser-copy reveal">
+              <h2>Coherent large-scene streaming without swollen replacement LODs.</h2>
+              <p>
+                The teaser condenses the central promise into one frame: BubbleSplat
+                keeps progressive delivery append-only, preserves useful structure in
+                early prefixes, and avoids the retransmission tax of replacement-style
+                LOD streaming.
+              </p>
+            </div>
+
+            <figure class="full-figure media-surface reveal">
+              <div class="media-frame media-frame-transparent">
+                <img
+                  src="assets/teaser.png"
+                  alt="BubbleSplat teaser figure from the LaTeX source"
+                  width="3112"
+                  height="1145"
+                />
+              </div>
+            </figure>
+          </div>
+        </div>
+      </section> -->
+
+      <section id="demo" class="section section-dark">
+        <div class="section-shell-wide">
+          <div class="demo-layout">
+            <div class="section-head reveal">
+              <p class="section-label">Demo</p>
+              <h2>BubbleSplat in motion.</h2>
+              <p>
+                The demo shows progressive delivery over large scenes with stable
+                coarse structure, continuous refinement, and real-time interaction on
+                constrained clients.
+              </p>
+            </div>
+
+            <div class="reveal">
+              <div class="video-frame hero-video-frame">
+                <video
+                  controls
+                  playsinline
+                  preload="metadata"
+                  poster="assets/demo-poster.jpg"
+                  width="2010"
+                  height="1144"
+                >
+                  <source src="assets/demo1.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="section section-ink">
+        <div class="section-shell two-column">
+          <div class="section-copy reveal">
+            <p class="section-label">Paper Summary</p>
+            <h2>Transmit once, stay coherent early, and keep memory bounded.</h2>
+            <p>
+              The paper starts from a concrete systems problem: current large-scene
+              3D Gaussian Splatting delivery pipelines either waste bandwidth through
+              replacement-based LOD or stay bandwidth-efficient but look sparse and
+              incoherent until most of the scene has arrived.
+            </p>
+            <p>
+              BubbleSplat addresses that gap with a training-free offline and online
+              design. Offline, it partitions a pretrained scene into tiles, builds
+              additive levels with hybrid saliency and spatial coverage, and inflates
+              early Gaussians using lineage-local support so coarse prefixes behave
+              like visually useful proxies. Online, a value-per-byte scheduler sends
+              the most useful chunks first, while inflated coarse levels remain in
+              memory as a persistent LOD cache for distant or evicted regions.
+            </p>
+            <p>
+              Across four benchmark scenes from 2.5M to 81M Gaussians, BubbleSplat
+              cuts bandwidth redundancy to 11.1%, reduces that redundancy by over 80%
+              against the state of the practice, reaches 27 dB with 3.23× fewer bytes
+              than the strongest replacement baseline, and keeps real-time rendering
+              viable on mobile-class hardware.
+            </p>
+          </div>
+
+          <div class="summary-points reveal">
+            <div class="summary-point">
+              <h3>Problem</h3>
+              <p>
+                Replacement LOD retransmits overlapping structure. Vanilla additive
+                avoids that tax but leaves early views hollow and memory footprints
+                unbounded.
+              </p>
+            </div>
+            <div class="summary-point">
+              <h3>Core idea</h3>
+              <p>
+                Inflate coarse Gaussians offline, then let append-only refinement
+                shrink those proxies back toward the raw geometry as support arrives.
+              </p>
+            </div>
+            <div class="summary-point">
+              <h3>Why it matters</h3>
+              <p>
+                The design keeps the transport simple, improves the first useful view,
+                and still behaves like a real LOD system when memory is tight.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-ink">
+        <div class="section-shell showcase-grid">
+          <div class="showcase-copy reveal">
+            <p class="section-label">Why Sculpted Additive</p>
+            <h2>Additive transport eliminates retransmission, but naive prefixes fall apart.</h2>
+            <p>
+              Replacement-based LOD keeps partial views coherent by repeatedly
+              replacing content, while vanilla additive streaming transmits each
+              primitive once but leaves early views hollow and structurally weak.
+              BubbleSplat breaks that tradeoff by sculpting the coarse prefix into a
+              visually useful proxy before refinement arrives.
+            </p>
+            <p>
+              Inflation turns sparse early Gaussians into stable coarse support, then
+              additive refinement progressively shrinks those proxies back toward the
+              original geometry instead of invalidating already transmitted content.
+            </p>
+          </div>
+
+          <div class="figure-stack reveal">
+            <figure class="media-surface">
+              <div class="media-frame media-frame-transparent">
+                <img
+                  src="assets/lod_vs_additive.png"
+                  alt="Source figure comparing replacement-based LOD and vanilla additive streaming"
+                  width="2497"
+                  height="783"
+                />
+              </div>
+              <figcaption>
+                Figure 2: coherent partial views versus sparse additive prefixes.
+              </figcaption>
+            </figure>
+
+            <figure class="media-surface">
+              <div class="media-frame media-frame-transparent">
+                <img
+                  src="assets/lod_bandwidth.png"
+                  alt="Source figure showing bandwidth redundancy of replacement-based LOD"
+                  width="1906"
+                  height="513"
+                />
+              </div>
+              <figcaption>
+                Figure 3: redundancy appears because each refined level re-transmits
+                overlapping content.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section id="method" class="section section-paper">
+        <div class="section-shell">
+          <div class="section-head reveal">
+            <p class="section-label">Method</p>
+            <h2>Offline inflation and online scheduling operate as one pipeline.</h2>
+            <p>
+              BubbleSplat first partitions a pretrained scene into coarse-to-fine
+              tiles, ranks Gaussians with saliency-aware coverage, and inflates sparse
+              early levels into stable prefixes. At runtime, it schedules chunks by
+              value per byte and retains inflated coarse levels as a persistent cache
+              when memory budgets tighten.
+            </p>
+          </div>
+
+          <figure class="full-figure media-surface reveal">
+            <div class="media-frame media-frame-transparent">
+              <img
+                src="assets/pipeline.png"
+                alt="BubbleSplat pipeline overview figure from the source files"
+                width="4670"
+                height="1549"
+              />
+            </div>
+            <figcaption>Figure 4: BubbleSplat pipeline overview.</figcaption>
+          </figure>
+
+          <div class="method-card-grid">
+            <article class="method-card reveal">
+              <figure class="media-surface">
+                <div class="media-frame media-frame-transparent">
+                  <img
+                    src="assets/fidelity_control.png"
+                    alt="Source figure comparing w o control and w control"
+                    width="2374"
+                    height="1475"
+                  />
+                </div>
+              </figure>
+              <span class="method-index">01</span>
+              <h3>Fidelity control</h3>
+              <p>
+                Preserving structure during inflation prevents the coarse model from
+                collapsing into elongated noise, so early prefixes remain visually
+                useful instead of dissolving into artifacts.
+              </p>
+            </article>
+
+            <article class="method-card reveal">
+              <figure class="media-surface">
+                <div class="media-frame">
+                  <img
+                    src="assets/scheduling.png"
+                    alt="Source figure showing scheduling comparison"
+                    width="1724"
+                    height="667"
+                  />
+                </div>
+              </figure>
+              <span class="method-index">02</span>
+              <h3>Priority-aware scheduling</h3>
+              <p>
+                BubbleSplat allocates bandwidth where it matters most, sending the
+                highest-value tiles first instead of starving visually important
+                regions.
+              </p>
+            </article>
+
+            <article class="method-card reveal">
+              <figure class="media-surface">
+                <div class="media-frame">
+                  <img
+                    src="assets/cache.png"
+                    alt="Source figure illustrating hierarchical cache management"
+                    width="1180"
+                    height="667"
+                  />
+                </div>
+              </figure>
+              <span class="method-index">03</span>
+              <h3>Persistent cache</h3>
+              <p>
+                Coarse parents stay resident when memory gets tight, so the runtime
+                behaves like a scalable LOD system without retransmitting geometry.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="results" class="section section-ink">
+        <div class="section-shell">
+          <div class="section-head reveal">
+            <p class="section-label">Results</p>
+            <h2>Higher quality arrives sooner because every transmitted byte keeps working.</h2>
+            <p>
+              Coarse prefixes remain structurally legible during delivery, and the
+              bytes-to-quality curves keep shifting left as scene scale grows. The
+              gain is not just lower redundancy; it is a better return on each byte
+              that reaches the client.
+            </p>
+          </div>
+
+          <figure class="full-figure media-surface reveal">
+            <div class="media-frame">
+              <img
+                src="assets/stream.png"
+                alt="Qualitative streaming comparison figure from the source files"
+                width="1198"
+                height="673"
+              />
+            </div>
+            <figcaption>
+              Figure 8: qualitative streaming comparison on Poland and Matrix City.
+            </figcaption>
+          </figure>
+
+          <div class="result-copy reveal">
+            <p>
+              Figure 8 captures the qualitative side of the result: intermediate
+              prefixes stay coherent instead of collapsing into sparse scaffolds.
+              Figure 9 quantifies the same advantage, showing that BubbleSplat reaches
+              target fidelity with much less transmitted data, especially on larger
+              scenes.
+            </p>
+          </div>
+
+          <figure class="full-figure media-surface chart-figure reveal">
+            <div class="media-frame">
+              <img
+                src="assets/bytes-to-psnr.png"
+                alt="PSNR versus cumulative transmitted bytes figure from the source files"
+                width="3023"
+                height="808"
+              />
+            </div>
+            <figcaption>
+              Figure 9: BubbleSplat reaches higher quality with fewer transmitted bytes.
+            </figcaption>
+          </figure>
+
+          <ul class="result-list reveal">
+            <li>40.4% fewer bytes than the state of the practice to reach 25 dB</li>
+            <li>3.23× fewer bytes than the state of the practice to reach 27 dB</li>
+            <li>Over 80% lower bandwidth redundancy than the state of the practice</li>
+            <li>4.95× higher PSNR gain per transmitted MB than the state of the practice</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section section-dark">
+        <div class="section-shell scene-layout">
+          <div class="scene-copy reveal">
+            <p class="section-label">Benchmarks And Applications</p>
+            <h2>From benchmark scenes to phones and VR, the same system stays responsive.</h2>
+            <p>
+              The evaluation spans Poland, Technopark, Matrix City, and Campus, from
+              neighborhood-scale reconstructions to an 810M-splat stress test. The
+              deployment targets stay practical throughout: mobile viewing, online
+              exploration, and immersive navigation under tight bandwidth and memory
+              budgets.
+            </p>
+          </div>
+
+          <figure class="deployment-figure media-surface reveal">
+            <div class="media-frame">
+              <img
+                src="assets/application.png"
+                alt="Application figure from the paper showing online exploration and VR immersive gaming"
+                width="1696"
+                height="657"
+              />
+            </div>
+            <figcaption>Figure 10: deployment contexts across mobile, web, and VR.</figcaption>
+          </figure>
+
+          <figure class="scene-figure tall-figure media-surface reveal">
+            <div class="media-frame">
+              <img
+                src="assets/dataset-overview.jpg"
+                alt="Dataset overview from the supplementary material"
+                width="1200"
+                height="1705"
+              />
+            </div>
+            <figcaption>
+              Supplementary Figure 3: Overview of Benchmark Scenes.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- <footer class="site-footer">
+      <p>BubbleSplat project materials sourced from the paper and supplementary video.</p>
+    </footer> -->
+  </body>
+</html>
